@@ -4,6 +4,9 @@ Borderlands games.
 
 # Changelog
 
+### v1.2
+No functional changes. Updated linting and CI logic.
+
 ### v1.0, v1.1
 Versions 1.0 and 1.1 were developed as part of the
 [willow2-mod-manager](https://github.com/bl-sdk/willow2-mod-manager/blob/master/changelog.md), see
