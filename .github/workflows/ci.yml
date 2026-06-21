@@ -19,6 +19,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
+      with:
+        path: keybinds
 
     - name: Checkout mods_base
       uses: actions/checkout@v6
@@ -39,16 +41,18 @@ jobs:
         python-version: ">=3.13"
 
     - name: Generate stubs
-      working-directory: .pyunrealsdk
       run: |
+        cd .pyunrealsdk
         pip install -r stubgen/requirements.txt
         python -m stubgen WILLOW ../.stubs
-
-    - name: Add stubs to pyproject
-      run: sed -i 's/# CI ADD STUB PATH HERE/stubPath = ".stubs"\nreportMissingModuleSource = false/' pyproject.toml
+        cd ..
+        rm -r .pyunrealsdk
+        sed -i 's/# CI ADD STUB PATH HERE/stubPath = "..\/.stubs"\nextraPaths = ["..\/"]\nreportMissingModuleSource = false/' keybinds/pyproject.toml
 
     - name: Run pyright
       uses: jakebailey/pyright-action@v3
+      with:
+        working-directory: ${{ github.workspace }}/keybinds/
 
   ruff:
     runs-on: ubuntu-latest
@@ -56,6 +60,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
+      with:
+        path: keybinds
 
     - name: Checkout mods_base
       uses: actions/checkout@v6
@@ -76,20 +82,21 @@ jobs:
         python-version: ">=3.13"
 
     - name: Generate stubs
-      working-directory: .pyunrealsdk
       run: |
+        cd .pyunrealsdk
         pip install -r stubgen/requirements.txt
         python -m stubgen WILLOW ../.stubs
         cd ..
         rm -r .pyunrealsdk
-
-    - name: Add stubs to pyproject
-      run: sed -i 's/# CI ADD STUB PATH HERE/stubPath = ".stubs"\nreportMissingModuleSource = false/' pyproject.toml
+        sed -i 's/# CI ADD STUB PATH HERE/stubPath = "..\/.stubs"\nextraPaths = ["..\/"]\nreportMissingModuleSource = false/' keybinds/pyproject.toml
 
     - name: Run Ruff Linting
       uses: astral-sh/ruff-action@v4.0.0
+      with:
+        src: keybinds/
 
     - name: Run Ruff Formatting
       uses: astral-sh/ruff-action@v4.0.0
       with:
+        src: keybinds/
         args: format --check

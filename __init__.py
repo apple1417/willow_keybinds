@@ -1,15 +1,13 @@
 from functools import wraps
 from typing import TYPE_CHECKING, Any
 
-from unrealsdk.hooks import Type
-
 from mods_base import EInputEvent, KeybindType, hook
 from mods_base.mod_list import base_mod
+from unrealsdk.hooks import Type
 
 if TYPE_CHECKING:
-    from unrealsdk.unreal import BoundFunction, UObject, WrappedStruct
-
     from mods_base.keybinds import KeybindCallback_Event, KeybindCallback_NoArgs
+    from unrealsdk.unreal import BoundFunction, UObject, WrappedStruct
 
 __all__: tuple[str, ...] = (
     "__author__",
