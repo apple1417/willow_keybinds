@@ -2,12 +2,13 @@ from functools import wraps
 from typing import TYPE_CHECKING, Any
 
 from unrealsdk.hooks import Type
-from unrealsdk.unreal import BoundFunction, UObject, WrappedStruct
 
 from mods_base import EInputEvent, KeybindType, hook
 from mods_base.mod_list import base_mod
 
 if TYPE_CHECKING:
+    from unrealsdk.unreal import BoundFunction, UObject, WrappedStruct
+
     from mods_base.keybinds import KeybindCallback_Event, KeybindCallback_NoArgs
 
 __all__: tuple[str, ...] = (
@@ -16,7 +17,7 @@ __all__: tuple[str, ...] = (
     "__version_info__",
 )
 
-__version_info__: tuple[int, int] = (1, 1)
+__version_info__: tuple[int, int] = (1, 2)
 __version__: str = f"{__version_info__[0]}.{__version_info__[1]}"
 __author__: str = "bl-sdk"
 

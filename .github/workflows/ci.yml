@@ -8,7 +8,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
 
     - name: Check spelling
       uses: crate-ci/typos@master
@@ -18,56 +18,78 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Checkout stubs
-      uses: actions/checkout@v4
-      with:
-        repository: bl-sdk/pyunrealsdk
-        path: pyunrealsdk
-        sparse-checkout: |
-          stubs
+      uses: actions/checkout@v6
 
     - name: Checkout mods_base
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: bl-sdk/mods_base
         path: mods_base
 
+    - name: Checkout pyunrealsdk
+      uses: actions/checkout@v6
+      with:
+        repository: bl-sdk/pyunrealsdk
+        path: .pyunrealsdk
+        submodules: recursive
+
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ">=3.13"
+
+    - name: Generate stubs
+      working-directory: .pyunrealsdk
+      run: |
+        pip install -r stubgen/requirements.txt
+        python -m stubgen WILLOW ../.stubs
+
     - name: Add stubs to pyproject
-      run: sed -i 's/# CI ADD STUB PATH HERE/stubPath = "pyunrealsdk\/stubs"\nreportMissingModuleSource = false/' pyproject.toml
+      run: sed -i 's/# CI ADD STUB PATH HERE/stubPath = ".stubs"\nreportMissingModuleSource = false/' pyproject.toml
 
     - name: Run pyright
-      uses: jakebailey/pyright-action@v2
+      uses: jakebailey/pyright-action@v3
 
   ruff:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
-
-    - name: Checkout stubs
-      uses: actions/checkout@v4
-      with:
-        repository: bl-sdk/pyunrealsdk
-        path: pyunrealsdk
-        sparse-checkout: |
-          stubs
+      uses: actions/checkout@v6
 
     - name: Checkout mods_base
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         repository: bl-sdk/mods_base
         path: mods_base
 
+    - name: Checkout pyunrealsdk
+      uses: actions/checkout@v6
+      with:
+        repository: bl-sdk/pyunrealsdk
+        path: .pyunrealsdk
+        submodules: recursive
+
+    - name: Setup Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: ">=3.13"
+
+    - name: Generate stubs
+      working-directory: .pyunrealsdk
+      run: |
+        pip install -r stubgen/requirements.txt
+        python -m stubgen WILLOW ../.stubs
+        cd ..
+        rm -r .pyunrealsdk
+
     - name: Add stubs to pyproject
-      run: sed -i 's/# CI ADD STUB PATH HERE/stubPath = "pyunrealsdk\/stubs"\nreportMissingModuleSource = false/' pyproject.toml
+      run: sed -i 's/# CI ADD STUB PATH HERE/stubPath = ".stubs"\nreportMissingModuleSource = false/' pyproject.toml
 
     - name: Run Ruff Linting
-      uses: chartboost/ruff-action@v1
+      uses: astral-sh/ruff-action@v4.0.0
 
     - name: Run Ruff Formatting
-      uses: chartboost/ruff-action@v1
+      uses: astral-sh/ruff-action@v4.0.0
       with:
         args: format --check
